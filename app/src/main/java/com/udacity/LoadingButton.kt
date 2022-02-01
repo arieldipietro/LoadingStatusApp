@@ -1,5 +1,6 @@
 package com.udacity
 
+import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.content.Context
@@ -10,7 +11,6 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import androidx.core.animation.doOnRepeat
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
@@ -54,10 +54,9 @@ class LoadingButton @JvmOverloads constructor(
                 Log.i("Main Activity", "State Loading")
                 //starts the loading animation
                 animateProgress()
-                //similarly handle the other 2 states as well
-                //buttonState = ButtonState.Completed
             }
             ButtonState.Completed -> {
+                valueAnimator.cancel()
                 Log.i("Main Activity", "State Completed")
             }
         }
@@ -69,21 +68,20 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        //super.onDraw( canvas) creo que no lo necesito
+        super.onDraw(canvas)
 
-        //drawing unclicked button. It's present all the time as a background color
-        drawUnclickedButton(canvas)
-        //draw clicked Button
-        drawLoadingButton(canvas)
+        //the unclicked light green button gets painted all the time, acting as a background for animation.
+        //depending on the state of the button, also the filled dark green button gets drawn
+        when(buttonState){
+            is ButtonState.Completed -> drawUnclickedButton(canvas)
+            is ButtonState.Loading -> {
+                drawUnclickedButton(canvas)
+                //draw clicked Button
+                drawLoadingButton(canvas)
+            }
+        }
         //Drawing Button Text, depending on the state
         drawButtonText(canvas)
-
-        //no se si lo voy a usar
-        /*when(buttonState){
-            is ButtonState.Completed -> drawButtonText()
-            is ButtonState.Loading -> drawLoadingButton(canvas)
-        }*/
-
     }
 
     //drawing the unclicked button
@@ -123,20 +121,19 @@ class LoadingButton @JvmOverloads constructor(
         val valuesHolder = PropertyValuesHolder.ofFloat("percentage", 0f, 100f)
 
         //instance of ValueAnimator
-        val animator = ValueAnimator().apply {
+        valueAnimator.apply {
             setValues(valuesHolder)
             //need to set the duration to the duration of the download
-            duration = 1000
+            duration = 200
             addUpdateListener {
                 val percentage = it.getAnimatedValue(PERCENTAGE_VALUE_HOLDER) as Float
                 currentPercentage = percentage.toInt()
                 invalidate()
             }
         }
-        animator.start()
-        /*animator.doOnRepeat {
-            buttonState = ButtonState.Completed
-        }*/
+        valueAnimator.start()
+        valueAnimator.repeatCount = ObjectAnimator.INFINITE
+        valueAnimator.repeatMode = ObjectAnimator.RESTART
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
