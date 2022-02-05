@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
+    private lateinit var radioButtonClicked : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,9 +73,13 @@ class MainActivity : AppCompatActivity() {
             if (downloadID == id) {
                 Toast.makeText(applicationContext, "Download Completed", Toast.LENGTH_SHORT).show()
                 //trigger the notification
-                onDownloadComplete()
+                onDownloadComplete(applicationContext.getString(R.string.notification_download_completed))
                 //restore state to draw the button
                 custom_button.buttonState = ButtonState.Completed
+            }
+            else{
+                custom_button.buttonState = ButtonState.Completed
+                onDownloadComplete(applicationContext.getString(R.string.notification_download_failed))
             }
         }
     }
@@ -87,14 +92,15 @@ class MainActivity : AppCompatActivity() {
             override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
                 when (checkedId) {
                     R.id.loadapp_radio -> {
-                        Log.i("Main Activity", "Loadpa")
+                        radioButtonClicked = applicationContext.getString(R.string.text_loadapp_radio)
                         customUrl = "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/refs/heads/master.zip"
                     }
                     R.id.retrofit_radio -> {
-                        Log.i("Main Activity", "retrofit")
+                        radioButtonClicked = applicationContext.getString(R.string.text_retrofit_radio)
                         customUrl = "https://github.com/square/retrofit/archive/refs/heads/master.zip"
                     }
                     R.id.glide_radio -> {
+                        radioButtonClicked = applicationContext.getString(R.string.text_glide_radio)
                         Log.i("Main Activity", "glide")
                         customUrl = "https://github.com/bumptech/glide/archive/refs/heads/master.zip"
                     }
@@ -119,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             downloadManager.enqueue(request)// enqueue puts the download request in the queue.
     }
 
-    private fun onDownloadComplete(){
+    private fun onDownloadComplete(message: String){
         //initialize an instance of Notification Manag
         val notificationManager = ContextCompat.getSystemService(
             applicationContext,
@@ -128,7 +134,7 @@ class MainActivity : AppCompatActivity() {
         //cancel previous notifications
         notificationManager.cancelNotifications()
         //send new notification
-        notificationManager.sendNotification(applicationContext.getString(R.string.notification_download_completed), applicationContext)
+        notificationManager.sendNotification(message, applicationContext)
     }
 
     private fun createChanel(channelId: String, channelName: String){
