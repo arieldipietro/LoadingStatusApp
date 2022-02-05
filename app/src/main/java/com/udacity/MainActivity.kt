@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.RadioButton
@@ -19,6 +20,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.udacity.databinding.ContentMainBinding
+import com.udacity.util.NameAndStatus
 import com.udacity.util.cancelNotifications
 import com.udacity.util.sendNotification
 import kotlinx.android.synthetic.main.activity_main.*
@@ -28,6 +30,7 @@ import kotlinx.android.synthetic.main.content_main.*
 class MainActivity : AppCompatActivity() {
 
     private var downloadID: Long = 0
+    private var status = ""
 
     //setting the URL for downloading the files
     private lateinit var customUrl : String
@@ -40,9 +43,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setSupportActionBar(toolbar)
+
 
         binding = ContentMainBinding.inflate(layoutInflater)
+        setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
 
         //Register broadcast receiver in onCreate()
@@ -72,12 +76,15 @@ class MainActivity : AppCompatActivity() {
             //Checking if the received broadcast is for our enqueued download by matching download id
             if (downloadID == id) {
                 Toast.makeText(applicationContext, "Download Completed", Toast.LENGTH_SHORT).show()
+                //changing status
+                status = "SUCCESS"
                 //trigger the notification
                 onDownloadComplete(applicationContext.getString(R.string.notification_download_completed))
                 //restore state to draw the button
                 custom_button.buttonState = ButtonState.Completed
             }
             else{
+                status = "FAILED"
                 custom_button.buttonState = ButtonState.Completed
                 onDownloadComplete(applicationContext.getString(R.string.notification_download_failed))
             }
@@ -119,6 +126,9 @@ class MainActivity : AppCompatActivity() {
                 .setRequiresCharging(false)
                 .setAllowedOverMetered(true)
                 .setAllowedOverRoaming(true)
+                .setDestinationInExternalFilesDir(this,
+                    Environment.DIRECTORY_DOWNLOADS,
+                    "UdacityAppDownloadFile")
 
         val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
         downloadID =
@@ -126,7 +136,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onDownloadComplete(message: String){
-        //initialize an instance of Notification Manag
+        //initialize an instance of Notification Manager
         val notificationManager = ContextCompat.getSystemService(
             applicationContext,
             NotificationManager::class.java) as NotificationManager
@@ -134,7 +144,7 @@ class MainActivity : AppCompatActivity() {
         //cancel previous notifications
         notificationManager.cancelNotifications()
         //send new notification
-        notificationManager.sendNotification(message, applicationContext)
+        notificationManager.sendNotification(NameAndStatus(radioButtonClicked, status) , message, applicationContext)
     }
 
     private fun createChanel(channelId: String, channelName: String){

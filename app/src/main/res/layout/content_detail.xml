@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout
+
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<data>
+    <variable
+        name="nameAndStatus"
+        type="com.udacity.util.NameAndStatus" />
+</data>
+
+<androidx.constraintlayout.motion.widget.MotionLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -33,7 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/fileName_text"
         android:layout_marginEnd="8dp"
-        android:text="file name value"/>
+        android:text="@{nameAndStatus.fileName}"/>
 
     <TextView
         android:id="@+id/status_text"
@@ -46,7 +55,7 @@
 
     <TextView
         android:id="@+id/status_text_value"
-        android:text="status value"
+        android:text="@{nameAndStatus.status}"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:layout_constraintStart_toEndOf="@+id/status_text"
@@ -67,3 +76,4 @@
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
+</layout>
