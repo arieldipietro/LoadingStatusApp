@@ -33,6 +33,7 @@ class DetailActivity : AppCompatActivity() {
             binding.contentDetail.statusTextValue.setTextColor(Color.GREEN)
         }
 
+
         //Getting back to Main Activity Via an Intent
         binding.contentDetail.okButton.setOnClickListener{
             val intentToMain = Intent(this, MainActivity::class.java)
