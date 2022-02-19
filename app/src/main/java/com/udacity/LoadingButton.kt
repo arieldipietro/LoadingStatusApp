@@ -16,9 +16,11 @@ import kotlin.properties.Delegates
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
     private var widthSize = 0
     private var heightSize = 0
     private var currentPercentage = 0
+    private val ovalSpace = RectF()
 
     //Main button in unclicked state
     private val rectPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply{
@@ -36,6 +38,11 @@ class LoadingButton @JvmOverloads constructor(
         textSize = 50f
         typeface = Typeface.create("Roboto", Typeface.NORMAL)
         color = context.getColor(R.color.colorPrimaryDark)
+    }
+    //Paint for the Orange circle
+    private val orangeCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply{
+        style = Paint.Style.FILL
+        color = context.getColor(R.color.orange_button)
     }
 
     //text for the button
@@ -78,6 +85,8 @@ class LoadingButton @JvmOverloads constructor(
                 drawUnclickedButton(canvas)
                 //draw clicked Button
                 drawLoadingButton(canvas)
+                //drawing orange circle
+                drawOrangeCircle(canvas)
             }
         }
         //Drawing Button Text, depending on the state
@@ -90,7 +99,8 @@ class LoadingButton @JvmOverloads constructor(
         canvas.drawRect(emptyRect, rectPaint)
         invalidate()
     }
-    //drawing the button text, depending on the state
+
+    //drawing the button TEXT, depending on the state
     private fun drawButtonText(canvas: Canvas){
         val buttonText = when(buttonState){
             is ButtonState.Completed -> resources.getString(R.string.button_download)
@@ -112,6 +122,26 @@ class LoadingButton @JvmOverloads constructor(
         invalidate()
     }
 
+    //drawing the orange circle
+    private fun drawOrangeCircle(canvas: Canvas){
+        val horizontalCenter = ((width/2)+(width/3)).toFloat()
+        val verticalCenter = (height/2).toFloat()
+        val ovalSize = 30
+        ovalSpace.set(
+            horizontalCenter - ovalSize,
+            verticalCenter - ovalSize,
+            horizontalCenter + ovalSize,
+            verticalCenter + ovalSize
+        )
+
+        val percentageToFill = getCurrentPercentageToFill()
+
+        //animating the filled button
+        canvas.drawArc(ovalSpace, 270f, percentageToFill, false, orangeCirclePaint)
+        invalidate()
+
+    }
+
     private fun getCurrentPercentageToFill() = (widthSize * (currentPercentage / PERCENTAGE_DIVIDER)).toFloat()
 
     //Followed a tutorial animation a circle progress and adapted it to fill the rectangle
@@ -124,7 +154,7 @@ class LoadingButton @JvmOverloads constructor(
         valueAnimator.apply {
             setValues(valuesHolder)
             //need to set the duration to the duration of the download
-            duration = 200
+            duration = 400
             addUpdateListener {
                 val percentage = it.getAnimatedValue(PERCENTAGE_VALUE_HOLDER) as Float
                 currentPercentage = percentage.toInt()

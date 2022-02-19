@@ -30,6 +30,8 @@ fun NotificationManager.sendNotification(nameAndStatus: NameAndStatus, messageBo
             .setContentText(messageBody)
         .setContentIntent(contentPendingIntent)
         .setOnlyAlertOnce(true)
+            //cancel when user clicks
+        .setAutoCancel(true)
             //adding the button
         .addAction(
             R.drawable.baseline_cloud_download_24,

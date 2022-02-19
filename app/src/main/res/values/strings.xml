@@ -24,4 +24,5 @@
     <string name="select_file_text">Please select the file to download</string>
     <string name="file_name">File name:</string>
     <string name="status_text">Status:</string>
+    <string name="cloud_image_view">Cloud Image View</string>
 </resources>

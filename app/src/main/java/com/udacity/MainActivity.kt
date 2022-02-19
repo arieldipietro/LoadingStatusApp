@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = ContentMainBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
@@ -52,11 +51,16 @@ class MainActivity : AppCompatActivity() {
         //Register broadcast receiver in onCreate()
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
-        createChanel(getString(R.string.download_notification_channel_id),
-            getString(R.string.download_notification_channel_name))
+        createChanel(getString(R.string.download_notification_channel_id), getString(R.string.download_notification_channel_name))
 
         onRadioButtonClicked()
+        /* calling onRadioButtonClicked() twice because of the following: In onCreate() to check
+            the very first time the button is clicked, and send the Toast message. Otherwise, it sends the toast
+            message even if a radio button was already selected.
+            In the click listener, to update the value of the file name passed to detail activity*/
+
         custom_button.setOnClickListener {
+            onRadioButtonClicked()
             if (this::customUrl.isInitialized) {
                 custom_button.buttonState = ButtonState.Loading
                 download()
@@ -67,7 +71,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     //listening to broadcast to know when the download is completed
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -75,12 +78,11 @@ class MainActivity : AppCompatActivity() {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             //Checking if the received broadcast is for our enqueued download by matching download id
             if (downloadID == id) {
-                Toast.makeText(applicationContext, "Download Completed", Toast.LENGTH_SHORT).show()
                 //changing status
                 status = "SUCCESS"
-                //trigger the notification
+                //triggers the notification
                 onDownloadComplete(applicationContext.getString(R.string.notification_download_completed))
-                //restore state to draw the button
+                //restores state to draw the button
                 custom_button.buttonState = ButtonState.Completed
             }
             else{
@@ -100,10 +102,12 @@ class MainActivity : AppCompatActivity() {
                 when (checkedId) {
                     R.id.loadapp_radio -> {
                         radioButtonClicked = applicationContext.getString(R.string.text_loadapp_radio)
+                        Log.i("Main Activity", "loadApp")
                         customUrl = "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/refs/heads/master.zip"
                     }
                     R.id.retrofit_radio -> {
                         radioButtonClicked = applicationContext.getString(R.string.text_retrofit_radio)
+                        Log.i("Main Activity", "retrofit")
                         customUrl = "https://github.com/square/retrofit/archive/refs/heads/master.zip"
                     }
                     R.id.glide_radio -> {
