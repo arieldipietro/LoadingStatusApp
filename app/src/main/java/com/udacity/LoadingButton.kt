@@ -137,7 +137,7 @@ class LoadingButton @JvmOverloads constructor(
         val percentageToFill = getCurrentPercentageToFill()
 
         //animating the filled button
-        canvas.drawArc(ovalSpace, 270f, percentageToFill, false, orangeCirclePaint)
+        canvas.drawArc(ovalSpace, 0f, percentageToFill, false, orangeCirclePaint)
         invalidate()
 
     }
@@ -154,7 +154,7 @@ class LoadingButton @JvmOverloads constructor(
         valueAnimator.apply {
             setValues(valuesHolder)
             //need to set the duration to the duration of the download
-            duration = 400
+            duration =400
             addUpdateListener {
                 val percentage = it.getAnimatedValue(PERCENTAGE_VALUE_HOLDER) as Float
                 currentPercentage = percentage.toInt()

@@ -32,7 +32,6 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-
     <ImageView
         android:id="@+id/cloud_image_view"
         android:layout_width="match_parent"
