@@ -11,11 +11,18 @@ import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat
 import kotlin.properties.Delegates
 
 class LoadingButton @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    //custom Attributes
+    private var attrSet = context.obtainStyledAttributes(attrs, R.styleable.LoadingButton)
+    private var unfilledColor = attrSet.getColor(R.styleable.LoadingButton_lb_background_color, ContextCompat.getColor(context, R.color.colorPrimary))
+    private var textColorWhite = attrSet.getColor(R.styleable.LoadingButton_lb_text_color, ContextCompat.getColor(context, R.color.white))
+
 
     private var widthSize = 0
     private var heightSize = 0
@@ -28,7 +35,7 @@ class LoadingButton @JvmOverloads constructor(
         textAlign = Paint.Align.CENTER
         textSize = 50f
         typeface = Typeface.create("Roboto", Typeface.NORMAL)
-        color = context.getColor(R.color.colorPrimary)
+        color = unfilledColor
     }
 
     //Button on clicked state and animation
@@ -49,7 +56,7 @@ class LoadingButton @JvmOverloads constructor(
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply{
         textAlign = Paint.Align.CENTER
         textSize = resources.getDimension(R.dimen.default_text_size)
-        color = context.getColor(R.color.white)
+        color = textColorWhite
         typeface = Typeface.create("", Typeface.BOLD)
     }
 
